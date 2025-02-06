@@ -5,6 +5,7 @@ package Model;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
+import ModelView.AuthController;
 import com.google.firebase.database.DataSnapshot;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -18,6 +19,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import View.AuthView;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  *
@@ -33,7 +37,7 @@ public class FirebaseServices {
         }
         
         try {
-            File file = new File("C:/Users/kamus/Documents/NetBeansProjects/Warehouse/credentials/admin-key.json");
+            File file = new File("C:/Users/kamus/Documents/NetBeansProjects/WarehouseManagerPoo/credentials/admin-key.json");
             if (!file.exists()) {
                 System.out.println("Error: El archivo de credenciales no existe en la ruta especificada.");
                 return;
@@ -41,7 +45,7 @@ public class FirebaseServices {
             System.out.println("Archivo JSON encontrado en la ruta especificada.");
             
             FirebaseOptions firebaseOptions = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(new FileInputStream("C:\\Users\\kamus\\Documents\\NetBeansProjects\\WarehouseManager\\credentials\\admin-key.json")))
+                    .setCredentials(GoogleCredentials.fromStream(new FileInputStream("C:\\Users\\kamus\\Documents\\NetBeansProjects\\WarehouseManagerPoo\\credentials\\admin-key.json")))
                     .setDatabaseUrl("https://warehousemanager-c07a0-default-rtdb.firebaseio.com/")
                     .build();
 
@@ -82,30 +86,44 @@ public class FirebaseServices {
     }
 
     // Método para recuperar todos los productos de una categoría
-    public static void getProductsByCategory(String category) {
+    public static List<Product> getAllProducts() {
+        List<Product> allProducts = new ArrayList<>();
         System.out.println("Inicializando Firebase...");
         initFirebase();
 
         if (firebaseDatabase == null) {
             System.out.println("Error: FirebaseDatabase es null, no se puede continuar.");
-            return;
+            return null;
         }
 
-        // Referencia a la ruta /categories/categoria_del_producto
-        DatabaseReference categoryReference = firebaseDatabase.getReference("categories").child(category);
+        DatabaseReference categoriesReference = firebaseDatabase.getReference("categories");
 
-        // Obtiene todos los productos de la categoría
-        categoryReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        categoriesReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    System.out.println("Productos en la categoría " + category + ":");
-                    for (DataSnapshot productSnapshot : snapshot.getChildren()) {
-                        Product product = productSnapshot.getValue(Product.class);
-                        System.out.println(product); // Aquí puedes modificar para mostrar los productos de la forma que prefieras
+                    System.out.println("Recuperando todos los productos...");
+                    for (DataSnapshot categorySnapshot : snapshot.getChildren()) {
+                        String category = categorySnapshot.getKey(); // clothing, technology, bicycles
+
+                        for (DataSnapshot productSnapshot : categorySnapshot.getChildren()) {
+                            Product product = productSnapshot.getValue(Product.class);
+                            if (product != null) {
+                          
+                                allProducts.add(product);
+                            }
                     }
+                }
+
+                    // Aquí puedes modificar para hacer lo que necesites con la lista de productos
+                    System.out.println("Lista de productos:");
+                    for (Product p : allProducts) {
+                        System.out.println(p);
+                    }
+                    
+
                 } else {
-                    System.out.println("No se encontraron productos en la categoría " + category);
+                    System.out.println("No se encontraron productos en la base de datos.");
                 }
             }
 
@@ -114,5 +132,64 @@ public class FirebaseServices {
                 System.out.println("Error al recuperar productos: " + error.getMessage());
             }
         });
+        return allProducts;
+    
+    }
+    public static User getAdminByUsername(String username,AuthView view){
+         System.out.println("Inicializando Firebase...");
+        initFirebase();
+
+        // Verifica que la conexión a Firebase haya sido exitosa
+        if (firebaseDatabase == null) {
+            System.out.println("Error: FirebaseDatabase es null, no se puede continuar.");
+            return null;
+        }
+
+        // Obtiene la referencia a la ruta /users/<username>
+        DatabaseReference userReference = firebaseDatabase.getReference("admin").child(username);
+
+        // Crea un CountDownLatch para esperar que Firebase complete la lectura
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+
+        // Contenedor para almacenar el usuario recuperado
+        final User[] retrievedUser = new User[1];
+
+        // Intentamos obtener el usuario por su nombre de usuario
+        System.out.println("Buscando al admin: " + username);
+        try {
+            userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        // Si el usuario existe, lo mapeamos al objeto User
+                        retrievedUser[0] = dataSnapshot.getValue(User.class);
+                    } else {
+                        AuthController.errorLogin("Usuario "+"'"+username+"'"+" no encontrado", view);
+                    }
+                    countDownLatch.countDown(); // Liberamos el CountDownLatch
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    AuthController.errorLogin("Error al iniciar sesión", view);
+                    countDownLatch.countDown(); // Liberamos el CountDownLatch en caso de error
+                    
+                }
+            });
+
+            // Esperamos hasta que Firebase complete la operación o se agote el tiempo
+            if (!countDownLatch.await(1000, TimeUnit.SECONDS)) {
+                System.out.println("Tiempo de espera agotado: Firebase no respondió.");
+                AuthController.errorLogin("Error al iniciar sesión", view);
+                return null;
+            }
+        } catch (Exception e) {
+            AuthController.errorLogin("Error al iniciar sesión", view);
+            e.printStackTrace();
+            return null;
+        }
+
+        // Devolvemos el usuario recuperado o null si no se encontró
+        return retrievedUser[0];
     }
 }

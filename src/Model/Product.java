@@ -9,48 +9,57 @@ package Model;
  * @author kamus
  */
 public class Product {
-    private String nombre;
-    private double precio;
-    private String categoria;
+    private String name;
+    private double price;
+    private String category;
+    private int units;
 
     // Constructor
-    public Product(String nombre,double precio, String categoria) {
-        this.nombre = nombre;
-        this.precio = precio;
-        this.categoria = categoria;
+    public Product(String name,double price, String category,int units) {
+        this.name = name;
+        this.price= price;
+        this.category = category;
+        this.units=units;
     }
 
     // Getters y Setters
 
     public String getName() {
-        return nombre;
+        return name;
     }
 
-    public void setName(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
 
     public double getPrice() {
-        return precio;
+        return price;
     }
 
-    public void setPrice(double precio) {
-        this.precio = precio;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public String getCategory() {
-        return categoria;
+        return category;
     }
 
-    public void setCategory(String categoria) {
-        this.categoria = categoria;
+    public void setCategory(String category) {
+        this.category = category;
+    }
+    public int getUnits() {
+        return units;
+    }
+
+    public void setCategory(int units) {
+        this.units = units;
     }
 
     // Método toString para mostrar el producto
     @Override
     public String toString() {
-        return "Producto [nombre=" + nombre + ", precio=" + precio + ", categoria="
-                + categoria;
+        return "Producto [nombre=" + name + ", precio=" + price + ", categoria="
+                + category;
     }
 }

@@ -8,13 +8,23 @@ package warehousemanager;
  *
  * @author kamus
  */
+import View.AuthView;
+import javax.swing.SwingUtilities;
+/**
+ *
+ * @author kamus
+ */
 public class WarehouseManager {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-    }
+        
+       SwingUtilities.invokeLater(()-> new AuthView());
+
+   
+   }
+
     
 }
