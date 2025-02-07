@@ -6,7 +6,9 @@ package ModelView;
 
 import Model.FirebaseServices;
 import View.AuthView;
+import View.ProductsView;
 import Model.User;
+import javax.swing.SwingUtilities; 
 /**
  *
  * @author kamus
@@ -35,6 +37,8 @@ public class AuthController {
                     }
                     if(user.getPassword().equals(password)){
                         System.out.println("contraseña correcta");
+                        view.dispose();
+                        SwingUtilities.invokeLater(()-> new ProductsView());
                     }else{
                         view.showErrorMessage("Contraseña incorrecta");
                     }

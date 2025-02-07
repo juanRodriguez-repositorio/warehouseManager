@@ -86,17 +86,17 @@ public class FirebaseServices {
     }
 
     // Método para recuperar todos los productos de una categoría
-    public static List<Product> getAllProducts() {
+    public static void getAllProducts(ProductsCallback callback) {
         List<Product> allProducts = new ArrayList<>();
         System.out.println("Inicializando Firebase...");
         initFirebase();
 
         if (firebaseDatabase == null) {
             System.out.println("Error: FirebaseDatabase es null, no se puede continuar.");
-            return null;
+            return;
         }
 
-        DatabaseReference categoriesReference = firebaseDatabase.getReference("categories");
+        DatabaseReference categoriesReference = firebaseDatabase.getReference("category");
 
         categoriesReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -104,8 +104,6 @@ public class FirebaseServices {
                 if (snapshot.exists()) {
                     System.out.println("Recuperando todos los productos...");
                     for (DataSnapshot categorySnapshot : snapshot.getChildren()) {
-                        String category = categorySnapshot.getKey(); // clothing, technology, bicycles
-
                         for (DataSnapshot productSnapshot : categorySnapshot.getChildren()) {
                             Product product = productSnapshot.getValue(Product.class);
                             if (product != null) {
@@ -121,6 +119,7 @@ public class FirebaseServices {
                         System.out.println(p);
                     }
                     
+                    callback.onProductsRetrieved(allProducts);
 
                 } else {
                     System.out.println("No se encontraron productos en la base de datos.");
@@ -132,7 +131,7 @@ public class FirebaseServices {
                 System.out.println("Error al recuperar productos: " + error.getMessage());
             }
         });
-        return allProducts;
+        
     
     }
     public static User getAdminByUsername(String username,AuthView view){

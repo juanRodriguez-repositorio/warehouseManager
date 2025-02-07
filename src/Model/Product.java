@@ -21,7 +21,7 @@ public class Product {
         this.category = category;
         this.units=units;
     }
-
+    public Product(){}
     // Getters y Setters
 
     public String getName() {
@@ -51,8 +51,7 @@ public class Product {
     public int getUnits() {
         return units;
     }
-
-    public void setCategory(int units) {
+    public void setUnits(int units) {
         this.units = units;
     }
 

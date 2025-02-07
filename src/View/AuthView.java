@@ -75,7 +75,7 @@ public class AuthView extends JFrame {
                        UIManager.put("Button.select",backgroundColor);
                      }
             
-            }
+                }
         });
         
         loginButton.addActionListener(new ActionListener() {
