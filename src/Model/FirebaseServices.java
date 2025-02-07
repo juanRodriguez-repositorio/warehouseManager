@@ -20,8 +20,14 @@ import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import View.AuthView;
+import View.ActionsView;
 import java.util.List;
 import java.util.ArrayList;
+import ModelView.ActionsController;
+import java.util.HashMap;
+import java.util.Map;
+import java.awt.Color;
+
 
 /**
  *
@@ -58,7 +64,7 @@ public class FirebaseServices {
     }
 
     // Método para agregar un producto a la categoría
-    public static void pushProductToCategory(Product product, String category) {
+    public static void pushProductToCategory(Product product, String category,ActionsView view) {
         System.out.println("Inicializando Firebase...");
         initFirebase();
 
@@ -68,7 +74,7 @@ public class FirebaseServices {
         }
 
         // Referencia a la ruta /categorias/categoria_del_producto/<nombre_producto>
-        DatabaseReference productReference = firebaseDatabase.getReference("categories")
+        DatabaseReference productReference = firebaseDatabase.getReference("category")
                 .child(category)
                 .child(product.getName());
 
@@ -78,13 +84,65 @@ public class FirebaseServices {
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError != null) {
                     System.out.println("Error al guardar el producto: " + databaseError.getMessage());
+                    ActionsController.showMessage("Error al guardar el producto",new Color(255,0,0),view);
                 } else {
                     System.out.println("Producto guardado exitosamente en la categoría " + category);
+                    ActionsController.showMessage("Producto guardado exitosamente",new Color(0,255,0),view);
+                    
+                    
                 }
             }
         });
     }
+    public static void updateProductAttribute(String categoryKey, String productKey, Double price, int units,ActionsView view) {
+        System.out.println("Inicializando Firebase...");
+        initFirebase();
 
+        if (firebaseDatabase == null) {
+            System.out.println("Error: FirebaseDatabase es null, no se puede continuar.");
+            return;
+        }
+        DatabaseReference databaseRef = firebaseDatabase.getReference("category");
+        DatabaseReference productRef = databaseRef.child(categoryKey).child(productKey);
+
+        // Crear un mapa con la actualización
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("price", price);
+        updates.put("units", units);
+
+        // Realizar la actualización con un CompletionListener
+        productRef.updateChildren(updates, (databaseError, databaseReference) -> {
+            if (databaseError != null) {
+                System.err.println("Error al actualizar el nodo: " + databaseError.getMessage());
+                ActionsController.showMessage("Error al actualizar el producto",new Color(255,0,0),view);
+            } else {
+                System.out.println("Nodo actualizado correctamente.");
+                ActionsController.showMessage("Producto actualizado correctamente",new Color(0,255,0),view);
+            }
+        });
+    }
+    public static void deleteProduct(String categoryKey, String productKey,ActionsView view) {
+        System.out.println("Inicializando Firebase...");
+        initFirebase();
+
+        if (firebaseDatabase == null) {
+            System.out.println("Error: FirebaseDatabase es null, no se puede continuar.");
+            return;
+        }
+        DatabaseReference databaseRef = firebaseDatabase.getReference("category");
+        DatabaseReference productRef = databaseRef.child(categoryKey).child(productKey);
+
+        // Eliminar el nodo
+        productRef.removeValue((databaseError, databaseReference) -> {
+            if (databaseError != null) {
+                System.err.println("Error al eliminar el nodo: " + databaseError.getMessage());
+                ActionsController.showMessage("Error al eliminiar el producto",new Color(255,0,0),view);
+            } else {
+                System.out.println("Nodo eliminado correctamente.");
+                ActionsController.showMessage("Producto eliminado correctamente",new Color(0,255,0),view);
+            }
+        });
+    }
     // Método para recuperar todos los productos de una categoría
     public static void getAllProducts(ProductsCallback callback) {
         List<Product> allProducts = new ArrayList<>();

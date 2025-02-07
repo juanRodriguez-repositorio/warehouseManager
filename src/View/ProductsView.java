@@ -17,6 +17,7 @@ import ModelView.ProductsController;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.table.TableCellRenderer;
+import View.ActionsView;
 
 
 public class ProductsView extends JFrame {
@@ -31,7 +32,7 @@ public class ProductsView extends JFrame {
         setSize(750, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); // Centra la ventana
-        setBackground(new Color(255, 240, 220)); // Color piel claro
+        getContentPane().setBackground(new Color(255, 240, 220)); // Color piel claro
         
 
         // Crear el modelo de la tabla
@@ -56,6 +57,7 @@ public class ProductsView extends JFrame {
 
         sortByUnitsButton.addActionListener(e -> ProductsController.orderProductsByUnits(ProductsView.this));
         sortByPriceButton.addActionListener(e -> ProductsController.orderProductsByPrice(ProductsView.this));
+        goToModifyButton.addActionListener(e -> goToModify());
 
         panel.add(sortByUnitsButton);
         panel.add(sortByPriceButton);
@@ -139,6 +141,11 @@ public class ProductsView extends JFrame {
         this.products = sortedProducts;  // Actualiza la lista de productos
         loadTableData();  // Actualiza la tabla con los productos ordenados
     }
+    private void goToModify(){
+        this.dispose();
+        SwingUtilities.invokeLater(()->new ActionsView());
+    }
+    
 
     // Ordenar productos por nombre (ascendente)
     
