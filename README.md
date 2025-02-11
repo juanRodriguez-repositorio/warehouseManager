@@ -1,6 +1,6 @@
 Mi trabajo se divide en tres vistas: vista de autenticación, lista de productos y vista para el CRUD de los productos.
 vista de autenticación: En esta vista utilicé firebase y realice la autenticación manualmente recuperando el usuario y su
-contraseña y validandola desde java. Separe mi código en vista:AuthView.java, modelo-vista:AuthController.java y 
+contraseña y validándola desde java. Separé mi código en vista:AuthView.java, modelo-vista:AuthController.java y 
 Model:FirebaseServices.java
 
 ![login](https://github.com/user-attachments/assets/0c538663-a008-4f02-8746-c3513ce417b8)
@@ -13,7 +13,7 @@ Separé mi código en vista: ProductsView.java, modelo-vista: ProductsController
 ![products](https://github.com/user-attachments/assets/56ed086f-9106-4e24-9a0a-53fbc629690b)
 
 vista de operaciones CRUD para los productos: Para esta vista como en las anteriores, usé firebase y sus librerias quienes facilitan 
-las operaciones CRUD, permito eliminar, modificar y crear productos mediante la GUI, ademas de usar al máximo los beneficios de 
+las operaciones CRUD. Permito eliminar, modificar y crear productos mediante la GUI, ademas de usar al máximo los beneficios de 
 las librerias de firebase para mantener información sobre la operación.
 separé mi código en vista: ActionsView.java, modelo-vista: ProductsController.java y Model: FirebaseServices.java.
 
