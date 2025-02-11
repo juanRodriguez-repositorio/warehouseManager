@@ -1,5 +1,5 @@
 Mi trabajo se divide en tres vistas: vista de autenticación, lista de productos y vista para el CRUD de los productos.
-vista de autenticación: En esta vista utilicé firebase y realice la autenticación manualmente recuperando el usuario y su
+vista de autenticación: En esta vista utilicé firebase y realicé la autenticación manualmente recuperando el usuario y su
 contraseña y validándola desde java. Separé mi código en vista:AuthView.java, modelo-vista:AuthController.java y 
 Model:FirebaseServices.java
 
@@ -19,6 +19,6 @@ separé mi código en vista: ActionsView.java, modelo-vista: ProductsController.
 
 ![Acciones](https://github.com/user-attachments/assets/7fd0d618-f39d-4977-bf49-a3244abc64ab)
 
-Por ultimo, traté de hacer la interfaz amigable y coherente entre vistas para mejor experiencia del usuario.
+Por último, traté de hacer la interfaz amigable y coherente entre vistas para mejor experiencia del usuario.
 
 
